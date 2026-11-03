@@ -11,13 +11,18 @@ supabase/
   migrations/0003_rls.sql               segurança por papel (dono x barbeiro)
   migrations/0004_funcoes.sql           check-in público, fila da TV, resumo mensal
   migrations/0005_storage_realtime.sql  bucket de fotos e realtime da fila
+  migrations/0006_atendimento.sql       chamar da fila e finalizar atendimento (atômico)
   seed.sql                              dados iniciais (preços e produtos de EXEMPLO)
-  setup.sql                             tudo acima num arquivo só, para o SQL Editor
+  setup.sql                             tudo acima num arquivo só (gerado por scripts/gerar-setup.sh)
 src/
   app/login                             login da equipe
   app/app                               painel (protegido)
   app/app/clientes                      lista, busca, ficha, fotos, histórico
-  app/checkin, app/tv                   telas públicas (dia 2)
+  app/app/atendimento/[id]              finalizar atendimento (itens, desconto, pagamento)
+  app/app/config                        barbearia + QR code, serviços, equipe e logins
+  app/checkin                           check-in público (tablet: /checkin, QR: /checkin?origem=qr)
+  app/fila/[id]                         posição do cliente no celular
+  app/tv                                fila para a TV
   lib/                                  supabase, auth, formatação
 ```
 
@@ -48,6 +53,10 @@ cp .env.example .env.local   # preencha URL e publishable key
 npm install
 npm run dev
 ```
+
+## Atualizar um banco que já existe
+Quando sair uma migration nova, rode **só o arquivo novo** no SQL Editor (ex.: `0006_atendimento.sql`).
+O `setup.sql` é só para instalação do zero.
 
 ## Regras que ficam no banco
 - **Estoque:** cada item de produto vendido gera saída automática; cada serviço consome os insumos da sua ficha técnica (`servico_insumos`). Apagar o item devolve o estoque.

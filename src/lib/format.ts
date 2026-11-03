@@ -51,3 +51,12 @@ export function diasDesde(iso: string | null | undefined) {
 export function whatsappLink(telefone: string) {
   return `https://wa.me/55${soDigitos(telefone)}`;
 }
+
+/** Formata enquanto digita: "1198" -> "(11) 98" */
+export function telefoneParcial(d: string) {
+  if (d.length <= 2) return d.length ? `(${d}` : "";
+  const ddd = `(${d.slice(0, 2)}) `;
+  const resto = d.slice(2);
+  const corte = d.length === 11 ? 5 : 4;
+  return resto.length > corte ? `${ddd}${resto.slice(0, corte)}-${resto.slice(corte)}` : ddd + resto;
+}
