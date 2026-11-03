@@ -12,6 +12,7 @@ supabase/
   migrations/0004_funcoes.sql           check-in público, fila da TV, resumo mensal
   migrations/0005_storage_realtime.sql  bucket de fotos e realtime da fila
   migrations/0006_atendimento.sql       chamar da fila e finalizar atendimento (atômico)
+  migrations/0007_estoque.sql           entrada (gera despesa) e ajuste por contagem
   seed.sql                              dados iniciais (preços e produtos de EXEMPLO)
   setup.sql                             tudo acima num arquivo só (gerado por scripts/gerar-setup.sh)
 src/
@@ -20,6 +21,10 @@ src/
   app/app/clientes                      lista, busca, ficha, fotos, histórico
   app/app/atendimento/[id]              finalizar atendimento (itens, desconto, pagamento)
   app/app/config                        barbearia + QR code, serviços, equipe e logins
+  app/app/estoque                       produtos, entrada, ajuste, histórico, fichas de insumo
+  app/app/despesas                      lançamentos do mês, fixas recorrentes
+  app/app/resumo                        indicadores do mês (barbeiro vê só quantidades)
+  app/app/exportar/[tipo]               planilhas Excel de clientes e estoque (só dono)
   app/checkin                           check-in público (tablet: /checkin, QR: /checkin?origem=qr)
   app/fila/[id]                         posição do cliente no celular
   app/tv                                fila para a TV

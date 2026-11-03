@@ -70,7 +70,6 @@ export default async function ClientesPage({
         </div>
         <div className="flex gap-2">
           {usuario.papel === "dono" && (
-            // eslint-disable-next-line @next/next/no-html-link-for-pages
             <a href="/app/exportar/clientes" download className="btn-secundario">
               <FileSpreadsheet className="size-4" /> Exportar Excel
             </a>
