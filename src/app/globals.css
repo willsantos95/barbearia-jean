@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Paleta: carvão + papel + latão (cor de navalha antiga) */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-papel: #f6f3ee;
+  --color-papel-2: #ece7df;
+  --color-carvao: #17140f;
+  --color-carvao-2: #26221b;
+  --color-tinta: #2b2620;
+  --color-cinza: #7a7266;
+  --color-linha: #ddd6ca;
+  --color-latao: #b4873f;
+  --color-latao-escuro: #8f6a2e;
+  --color-perigo: #b23a2b;
+  --color-ok: #3d7a4f;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-papel);
+  color: var(--color-tinta);
+}
+
+/* Componentes base reutilizados nas telas */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primario {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 bg-carvao text-papel hover:bg-carvao-2;
+  }
+  .btn-latao {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 bg-latao text-carvao hover:bg-latao-escuro hover:text-papel;
+  }
+  .btn-secundario {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 border border-linha bg-white text-tinta hover:bg-papel-2;
+  }
+  .btn-perigo {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 border border-perigo/30 bg-white text-perigo hover:bg-perigo hover:text-white;
+  }
+  .campo {
+    @apply w-full rounded-lg border border-linha bg-white px-3 py-2.5 text-base text-tinta outline-none placeholder:text-cinza/70 focus:border-latao focus:ring-2 focus:ring-latao/25 sm:text-sm;
+  }
+  .rotulo {
+    @apply mb-1.5 block text-xs font-semibold tracking-wide text-cinza uppercase;
+  }
+  .cartao {
+    @apply rounded-xl border border-linha bg-white;
+  }
+  .titulo-pagina {
+    @apply text-2xl font-bold tracking-tight text-carvao;
+  }
 }
