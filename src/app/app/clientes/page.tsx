@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { clsx } from "clsx";
-import { Cake, Plus, Search } from "lucide-react";
+import { Cake, FileSpreadsheet, Plus, Search } from "lucide-react";
+import { getUsuario } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { dataFmt, diasDesde, soDigitos, telefoneFmt } from "@/lib/format";
 
@@ -22,6 +23,7 @@ export default async function ClientesPage({
   searchParams: Promise<{ q?: string; f?: Filtro }>;
 }) {
   const { q = "", f = "todos" } = await searchParams;
+  const usuario = await getUsuario();
   const supabase = await createClient();
   const termo = q.trim();
   const mesAtual = Number(
@@ -66,9 +68,17 @@ export default async function ClientesPage({
           <h1 className="titulo-pagina">Clientes</h1>
           <p className="text-sm text-cinza">{total ?? 0} cadastrados</p>
         </div>
-        <Link href="/app/clientes/novo" className="btn-primario">
-          <Plus className="size-4" /> Novo cliente
-        </Link>
+        <div className="flex gap-2">
+          {usuario.papel === "dono" && (
+            // eslint-disable-next-line @next/next/no-html-link-for-pages
+            <a href="/app/exportar/clientes" download className="btn-secundario">
+              <FileSpreadsheet className="size-4" /> Exportar Excel
+            </a>
+          )}
+          <Link href="/app/clientes/novo" className="btn-primario">
+            <Plus className="size-4" /> Novo cliente
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
