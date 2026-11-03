@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Printer } from "lucide-react";
 
+const esc = (t: string) =>
+  t.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
 export function QrCheckin({ nome }: { nome: string }) {
   const [origem, setOrigem] = useState("");
   useEffect(() => setOrigem(window.location.origin), []);
@@ -17,7 +20,7 @@ export function QrCheckin({ nome }: { nome: string }) {
       <style>body{font-family:system-ui,sans-serif;text-align:center;padding:48px;color:#17140f}
       h1{font-size:28px;margin:0 0 6px}p{font-size:18px;margin:0 0 32px;color:#555}
       svg{width:360px;height:360px}small{display:block;margin-top:24px;color:#888;font-size:13px}</style></head>
-      <body><h1>${nome}</h1><p>Aponte a câmera e entre na fila</p>${svg}<small>${url}</small>
+      <body><h1>${esc(nome)}</h1><p>Aponte a câmera e entre na fila</p>${svg}<small>${esc(url)}</small>
       <script>window.onload=()=>window.print()</script></body></html>`);
     w.document.close();
   }

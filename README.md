@@ -13,6 +13,8 @@ supabase/
   migrations/0005_storage_realtime.sql  bucket de fotos e realtime da fila
   migrations/0006_atendimento.sql       chamar da fila e finalizar atendimento (atômico)
   migrations/0007_estoque.sql           entrada (gera despesa) e ajuste por contagem
+  migrations/0008_seguranca.sql         limite de tentativas no check-in, novos usuários sem acesso,
+                                        barbeiro só lê os próprios atendimentos, anon sem acesso a tabelas
   seed.sql                              dados iniciais (preços e produtos de EXEMPLO)
   setup.sql                             tudo acima num arquivo só (gerado por scripts/gerar-setup.sh)
 src/
@@ -32,6 +34,9 @@ src/
 ```
 
 ## Colocar no ar (primeira vez)
+
+> **Logins:** crie a equipe pelo painel (Configurações → Equipe). Usuários criados direto no
+> Supabase (depois do primeiro) nascem **bloqueados** e precisam ser reativados nessa tela.
 
 ### 1. Banco (Supabase)
 1. **SQL Editor → New query**: cole o conteúdo de `supabase/setup.sql` e clique em **Run**.

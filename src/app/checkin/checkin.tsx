@@ -75,7 +75,7 @@ export function Checkin({ origem }: { origem: "totem" | "qr" }) {
     setCarregando(true);
     const { data, error } = await supabase.rpc("checkin_buscar", { p_telefone: telefone });
     setCarregando(false);
-    if (error) return setErro("Confira o número com DDD.");
+    if (error) return setErro(error.message.includes("Muitas") ? error.message : "Confira o número com DDD.");
     const r = data as { encontrado: boolean; primeiro_nome?: string; fila_id?: string | null };
     if (r.encontrado && r.fila_id) {
       const { data: st } = await supabase.rpc("fila_status", { p_fila_id: r.fila_id });
@@ -190,6 +190,7 @@ export function Checkin({ origem }: { origem: "totem" | "qr" }) {
               <input
                 autoFocus
                 value={nome}
+                maxLength={60}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Seu nome"
                 className="mt-8 w-full rounded-xl border border-papel/20 bg-carvao-2 px-5 py-4 text-2xl text-papel outline-none placeholder:text-papel/30 focus:border-latao"

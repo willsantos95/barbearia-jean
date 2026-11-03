@@ -20,11 +20,11 @@ const PAGAMENTO: Record<string, string> = {
 type Atendimento = {
   id: string;
   data: string;
-  total_centavos: number;
+  total_centavos: number | null;
   forma_pagamento: string | null;
   observacoes: string | null;
-  barbeiros: { nome: string } | null;
-  atendimento_itens: { descricao: string; quantidade: number; tipo: string }[];
+  barbeiro: string | null;
+  itens: { descricao: string; quantidade: number }[];
 };
 
 export default async function ClientePage({ params }: { params: Promise<{ id: string }> }) {
@@ -39,12 +39,8 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
       .select("id, storage_path, legenda, created_at")
       .eq("cliente_id", id)
       .order("created_at", { ascending: false }),
-    supabase
-      .from("atendimentos")
-      .select("id, data, total_centavos, forma_pagamento, observacoes, barbeiros(nome), atendimento_itens(descricao, quantidade, tipo)")
-      .eq("cliente_id", id)
-      .order("data", { ascending: false })
-      .limit(30),
+    // valores só voltam para o dono (regra no banco)
+    supabase.rpc("historico_cliente", { p_cliente_id: id }),
   ]);
 
   if (!cliente) notFound();
@@ -64,7 +60,8 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
 
   const atendimentos = (atendimentosRaw ?? []) as unknown as Atendimento[];
   const dias = diasDesde(cliente.ultima_visita);
-  const gastoTotal = atendimentos.reduce((s, a) => s + a.total_centavos, 0);
+  const gastoTotal = atendimentos.reduce((s, a) => s + (a.total_centavos ?? 0), 0);
+  const dono = usuario.papel === "dono";
 
   return (
     <div className="space-y-6">
@@ -94,7 +91,7 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
         </a>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className={dono ? "grid grid-cols-3 gap-3" : "grid grid-cols-2 gap-3"}>
         <div className="cartao p-4">
           <p className="text-xs font-semibold tracking-wide text-cinza uppercase">Visitas</p>
           <p className="mt-1 font-mono text-2xl font-bold tabular-nums">{cliente.total_visitas}</p>
@@ -103,10 +100,12 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
           <p className="text-xs font-semibold tracking-wide text-cinza uppercase">Última visita</p>
           <p className="mt-1 text-lg font-bold">{cliente.ultima_visita ? `há ${dias} d` : "—"}</p>
         </div>
-        <div className="cartao p-4">
-          <p className="text-xs font-semibold tracking-wide text-cinza uppercase">Gasto (últ. 30)</p>
-          <p className="mt-1 text-lg font-bold">{reais(gastoTotal)}</p>
-        </div>
+        {dono && (
+          <div className="cartao p-4">
+            <p className="text-xs font-semibold tracking-wide text-cinza uppercase">Gasto (últ. 30)</p>
+            <p className="mt-1 text-lg font-bold">{reais(gastoTotal)}</p>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -138,13 +137,13 @@ export default async function ClientePage({ params }: { params: Promise<{ id: st
                   <li key={a.id} className="py-3 text-sm">
                     <div className="flex justify-between gap-2">
                       <span className="font-semibold">{dataHoraFmt(a.data)}</span>
-                      <span className="font-mono tabular-nums">{reais(a.total_centavos)}</span>
+                      {a.total_centavos != null && <span className="font-mono tabular-nums">{reais(a.total_centavos)}</span>}
                     </div>
                     <p className="text-cinza">
-                      {a.atendimento_itens.map((i) => (i.quantidade > 1 ? `${i.quantidade}× ${i.descricao}` : i.descricao)).join(", ") || "—"}
+                      {a.itens.map((i) => (i.quantidade > 1 ? `${i.quantidade}× ${i.descricao}` : i.descricao)).join(", ") || "—"}
                     </p>
                     <p className="text-xs text-cinza">
-                      {a.barbeiros?.nome ?? "—"}
+                      {a.barbeiro ?? "—"}
                       {a.forma_pagamento && ` · ${PAGAMENTO[a.forma_pagamento] ?? a.forma_pagamento}`}
                     </p>
                     {a.observacoes && <p className="mt-1 text-xs italic">{a.observacoes}</p>}

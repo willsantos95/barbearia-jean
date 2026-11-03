@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { soDigitos } from "@/lib/format";
+import { exigirDono } from "@/lib/auth";
 
 export type FormState = { erro?: string; ok?: string };
 
@@ -63,10 +64,11 @@ export async function atualizarCliente(id: string, _: FormState, formData: FormD
 }
 
 export async function excluirCliente(id: string) {
+  await exigirDono();
   const supabase = await createClient();
   const { data: fotos } = await supabase.from("cliente_fotos").select("storage_path").eq("cliente_id", id);
-  const { error } = await supabase.from("clientes").delete().eq("id", id);
-  if (error) throw new Error("Só o dono pode excluir clientes.");
+  const { data: apagado, error } = await supabase.from("clientes").delete().eq("id", id).select("id");
+  if (error || !apagado?.length) throw new Error("Não foi possível excluir o cliente.");
   if (fotos?.length) {
     await supabase.storage.from("fotos-clientes").remove(fotos.map((f) => f.storage_path));
   }

@@ -60,7 +60,7 @@ export default async function PainelPage({ searchParams }: { searchParams: Promi
         </div>
         <div className="flex gap-6 text-right">
           <div>
-            <p className="text-xs font-semibold tracking-wide text-cinza uppercase">Atendidos hoje</p>
+            <p className="text-xs font-semibold tracking-wide text-cinza uppercase">{usuario.papel === "dono" ? "Atendidos hoje" : "Seus atendimentos hoje"}</p>
             <p className="font-mono text-2xl font-bold tabular-nums">{atendimentos.length}</p>
           </div>
           {usuario.papel === "dono" && (
@@ -102,7 +102,9 @@ export default async function PainelPage({ searchParams }: { searchParams: Promi
       <FilaAoVivo barbeiros={(barbeiros ?? []).map(({ id, nome }) => ({ id, nome }))} meuBarbeiroId={meuBarbeiro} hoje={hoje} />
 
       <section>
-        <h2 className="text-xs font-semibold tracking-[0.18em] text-cinza uppercase">Atendimentos de hoje</h2>
+        <h2 className="text-xs font-semibold tracking-[0.18em] text-cinza uppercase">
+          {usuario.papel === "dono" ? "Atendimentos de hoje" : "Seus atendimentos de hoje"}
+        </h2>
         <div className="cartao mt-3 divide-y divide-linha">
           {atendimentos.length === 0 && <p className="p-5 text-sm text-cinza">Nenhum atendimento finalizado ainda.</p>}
           {atendimentos.map((a) => (
